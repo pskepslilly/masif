@@ -10,7 +10,7 @@ from IPython.core.debugger import set_trace
 
 # Local includes
 from default_config.masif_opts import masif_opts
-from triangulation.computeMSMS import computeMSMS
+from triangulation.computeSurface import computeSurface
 from triangulation.fixmesh import fix_mesh
 import pymesh
 from input_output.extractPDB import extractPDB
@@ -47,9 +47,9 @@ pdb_filename = protonated_file
 out_filename1 = tmp_dir+"/"+pdb_id+"_"+chain_ids1
 extractPDB(pdb_filename, out_filename1+".pdb", chain_ids1)
 
-# Compute MSMS of surface w/hydrogens, 
+# Compute surface of chain w/hydrogens,
 try:
-    vertices1, faces1, normals1, names1, areas1 = computeMSMS(out_filename1+".pdb",\
+    vertices1, faces1, normals1, names1, areas1 = computeSurface(out_filename1+".pdb",\
         protonate=True)
 except:
     set_trace()
@@ -89,7 +89,7 @@ if masif_opts['use_apbs']:
 iface = np.zeros(len(regular_mesh.vertices))
 if 'compute_iface' in masif_opts and masif_opts['compute_iface']:
     # Compute the surface of the entire complex and from that compute the interface.
-    v3, f3, _, _, _ = computeMSMS(pdb_filename,\
+    v3, f3, _, _, _ = computeSurface(pdb_filename,\
         protonate=True)
     # Regularize the mesh
     mesh = pymesh.form_mesh(v3, f3)

@@ -2,20 +2,24 @@ from Bio.PDB import *
 from default_config.chemistry import radii, polarHydrogens
 
 """
-xyzrn.py: Read a pdb file and output it is in xyzrn for use in MSMS
-Pablo Gainza - LPDI STI EPFL 2019
-This file is part of MaSIF.
+xyzr.py: Read a pdb file and output it in xyzr format for use in NanoShaper.
 Released under an Apache License 2.0
 """
 
-def output_pdb_as_xyzrn(pdbfilename, xyzrnfilename):
+def output_pdb_as_xyzr(pdbfilename, xyzrfilename):
     """
         pdbfilename: input pdb filename
-        xyzrnfilename: output in xyzrn format.
+        xyzrfilename: output in xyzr format (x y z radius per atom, no name field).
+
+        Returns the list of per-atom name strings, in the same order as the
+        lines written to xyzrfilename, in the format
+        chain_resid_insertion_resname_atomname_color (the same convention
+        output_pdb_as_xyzrn used to embed directly in the xyzrn file).
     """
     parser = PDBParser()
     struct = parser.get_structure(pdbfilename, pdbfilename)
-    outfile = open(xyzrnfilename, "w")
+    names = []
+    outfile = open(xyzrfilename, "w")
     for atom in struct.get_atoms():
         name = atom.get_name()
         residue = atom.get_parent()
@@ -23,7 +27,6 @@ def output_pdb_as_xyzrn(pdbfilename, xyzrnfilename):
         if residue.get_id()[0] != " ":
             continue
         resname = residue.get_resname()
-        reskey = residue.get_id()[1]
         chain = residue.get_parent().get_id()
         atomtype = name[0]
 
@@ -47,5 +50,7 @@ def output_pdb_as_xyzrn(pdbfilename, xyzrnfilename):
                 chain, residue.get_id()[1], insertion, resname, name, color
             )
         if coords is not None:
-            outfile.write(coords + " " + radii[atomtype] + " 1 " + full_id + "\n")
-
+            outfile.write(coords + " " + radii[atomtype] + "\n")
+            names.append(full_id)
+    outfile.close()
+    return names

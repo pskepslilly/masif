@@ -20,3 +20,5 @@ Contains the protocol followed to prepare protein structures for MaSIF, in order
 
 + *04b-make_ligand_tfrecords.py*: Make tensorflow records (used by MaSIF-ligand only)
 
++ *compute_surface_features.py*: Standalone script to compute the surface mesh and features (.ply) for an arbitrary input PDB file, without the fixed data_preparation/ directory layout the numbered scripts above require. Run with `-h` for usage.
+

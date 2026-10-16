@@ -23,19 +23,26 @@ def computeAPBS(vertices, pdb_file, tmp_file_base):
     pdbname = pdb_file.split("/")[-1]
     args = [
         pdb2pqr_bin,
-        "--ff=parse",
+        "--ff=PARSE",
         "--whitespace",
         "--noopt",
         "--apbs-input",
+        filename_base + ".in",
         pdbname,
         filename_base,
     ]
     p2 = Popen(args, stdout=PIPE, stderr=PIPE, cwd=directory)
     stdout, stderr = p2.communicate()
+    if p2.returncode != 0:
+        raise RuntimeError("pdb2pqr failed with return code {}: {}".format(
+            p2.returncode, stderr.decode(errors="replace")))
 
     args = [apbs_bin, filename_base + ".in"]
     p2 = Popen(args, stdout=PIPE, stderr=PIPE, cwd=directory)
     stdout, stderr = p2.communicate()
+    if p2.returncode != 0:
+        raise RuntimeError("APBS failed with return code {}: {}".format(
+            p2.returncode, stderr.decode(errors="replace")))
 
     vertfile = open(directory + "/" + filename_base + ".csv", "w")
     for vert in vertices:
@@ -50,6 +57,9 @@ def computeAPBS(vertices, pdb_file, tmp_file_base):
     ]
     p2 = Popen(args, stdout=PIPE, stderr=PIPE, cwd=directory)
     stdout, stderr = p2.communicate()
+    if p2.returncode != 0:
+        raise RuntimeError("multivalue failed with return code {}: {}".format(
+            p2.returncode, stderr.decode(errors="replace")))
 
     # Read the charge file
     chargefile = open(tmp_file_base + "_out.csv")
@@ -58,11 +68,9 @@ def computeAPBS(vertices, pdb_file, tmp_file_base):
         charges[ix] = float(line.split(",")[3])
 
     remove_fn = os.path.join(directory, filename_base)
-    os.remove(remove_fn)
-    os.remove(remove_fn+'.csv')
-    os.remove(remove_fn+'.dx')
-    os.remove(remove_fn+'.in')
-    os.remove(remove_fn+'-input.p')
-    os.remove(remove_fn+'_out.csv')
+    for suffix in ("", ".csv", ".dx", ".in", ".log", "-input.p", "_out.csv"):
+        f = remove_fn + suffix
+        if os.path.exists(f):
+            os.remove(f)
 
     return charges

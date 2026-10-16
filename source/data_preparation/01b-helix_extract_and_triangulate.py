@@ -10,7 +10,7 @@ from IPython.core.debugger import set_trace
 
 # Local includes
 from default_config.masif_opts import masif_opts
-from triangulation.computeMSMS import computeMSMS
+from triangulation.computeSurface import computeSurface
 from triangulation.fixmesh import fix_mesh
 import pymesh
 from input_output.extractHelix import extractHelix
@@ -81,8 +81,8 @@ for chain_id in list(chain_ids1):
         out_filename1 = "{}/{}{:03d}_{}".format(tmp_dir,pdb_id,ix,chain_id)
         extractHelix(helix, pdb_filename, out_filename1+".pdb", chain_id)
 
-        # Compute MSMS of surface w/hydrogens, 
-        vertices1, faces1, normals1, names1, areas1 = computeMSMS(out_filename1+".pdb",\
+        # Compute surface of helix w/hydrogens,
+        vertices1, faces1, normals1, names1, areas1 = computeSurface(out_filename1+".pdb",\
             protonate=True)
 
         # Compute "charged" vertices

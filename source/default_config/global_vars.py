@@ -6,12 +6,12 @@ import os
 from IPython.core.debugger import set_trace
 epsilon = 1.0e-6
 
-msms_bin= ""
-if 'MSMS_BIN' in os.environ:
-   msms_bin = os.environ['MSMS_BIN']
+nanoshaper_bin= ""
+if 'NANOSHAPER_BIN' in os.environ:
+   nanoshaper_bin = os.environ['NANOSHAPER_BIN']
 else:
   set_trace()
-  print("ERROR: MSMS_BIN not set. Variable should point to MSMS program.")
+  print("ERROR: NANOSHAPER_BIN not set. Variable should point to NanoShaper program.")
   sys.exit(1)
 
 pdb2pqr_bin=""

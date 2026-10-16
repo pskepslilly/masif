@@ -73,7 +73,7 @@ to compute chemical/geometric features and coordinates, and to perform neural ne
 The following is the list of required libraries and programs, as well as the version on which it was tested (in parenthesis).
 * [Python](https://www.python.org/) (3.6)
 * [reduce](http://kinemage.biochem.duke.edu/software/reduce.php) (3.23). To add protons to proteins. 
-* [MSMS](http://mgltools.scripps.edu/packages/MSMS/) (2.6.1). To compute the surface of proteins. 
+* [NanoShaper](https://gitlab.iit.it/SDecherchi/nanoshaper) (1.5). To compute the surface of proteins. Note: NanoShaper is licensed under GPLv3; MaSIF only invokes it as a separate external program, so this does not affect MaSIF's own Apache 2.0 license.
 * [BioPython](https://github.com/biopython/biopython) (1.66) . To parse PDB files. 
 * [PyMesh](https://github.com/PyMesh/PyMesh) (0.1.14). To handle ply surface files, attributes, and to regularize meshes.
 * PDB2PQR (2.1.1), multivalue, and [APBS](http://www.poissonboltzmann.org/) (1.5). These programs are necessary to compute electrostatics charges.
@@ -94,8 +94,7 @@ export PDB2PQR_BIN=/path/to/apbs/apbs/pdb2pqr-linux-bin64-2.1.1/pdb2pqr
 export PATH=$PATH:/path/to/reduce/
 export REDUCE_HET_DICT=/path/to/reduce/reduce_wwPDB_het_dict.txt
 export PYMESH_PATH=/path/to/PyMesh
-export MSMS_BIN=/path/to/msms/msms
-export PDB2XYZRN=/path/to/msms/pdb_to_xyzrn
+export NANOSHAPER_BIN=/path/to/nanoshaper/NanoShaper
 ```
 
 Clone masif to a local directory
@@ -110,7 +109,7 @@ Since MaSIF is written in Python, no compilation is required.
 ## Method overview 
 
 From a protein structure MaSIF computes a molecular surface discretized as a mesh according to the solvent 
-excluded surface (computed using MSMS), and assigns geometric and chemical features to every point (vertex) 
+excluded surface (computed using NanoShaper), and assigns geometric and chemical features to every point (vertex) 
 in the mesh. 
 Around each vertex of the mesh, we extract a patch with geodesic radius of r=9 Å or r=12 Å.
 Then, MaSIF applies a geometric deep neural network to these patches. 
@@ -134,10 +133,10 @@ For each application, MaSIF requires a preprocessing of data. This entails a run
 which performs the following steps: 
 
 1. Download the PDB. 
-2. Protonate the PDB, extract the desired chains, triangulate the surface (using MSMS), and compute chemical features. 
+2. Protonate the PDB, extract the desired chains, triangulate the surface (using NanoShaper), and compute chemical features. 
 3. Extract all patches, with features and coordinates, for each protein.
 
-MaSIF's main speed bottleneck lie in these three steps. The main performance bottlenecks are computing the angular coordinates using MDS, computing the Poisson-Boltzmann electrostatics and regularizing the mesh after computing the MSMS surface.
+MaSIF's main speed bottleneck lie in these three steps. The main performance bottlenecks are computing the angular coordinates using MDS, computing the Poisson-Boltzmann electrostatics and regularizing the mesh after computing the NanoShaper surface.
 
 Each application data directory (under masif/data/masif\*) contains a script to precompute the data.
 
